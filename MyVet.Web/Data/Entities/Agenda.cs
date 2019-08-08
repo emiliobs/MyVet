@@ -24,5 +24,9 @@ namespace MyVet.Web.Data.Entities
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd H:mm tt}", ApplyFormatInEditMode = true)]
         public DateTime DateLocal => Date.ToLocalTime();
 
+        //Relations
+        public Owner Owner { get; set; }
+        public Pet  Pet { get; set; }
+
     }
 }

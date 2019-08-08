@@ -38,6 +38,12 @@ namespace MyVet.Web.Data.Entities
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime BornLocal => Born.ToLocalTime();
 
+        //relations
+        public PetType PetType  { get; set; }
+        public ICollection<History> Histories { get; set; }
+        public ICollection<Agenda> Agendas { get; set; }
+        public Owner Owner { get; set; }
+
 
     }
 }

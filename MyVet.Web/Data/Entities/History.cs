@@ -9,9 +9,7 @@ namespace MyVet.Web.Data.Entities
 {
     public class History
     {
-        public int Id { get; set; }
-
-        public ServiceType ServiceType { get; set; }
+        public int Id { get; set; }                          
 
         [Display(Name = "Description")]
         [MaxLength(100, ErrorMessage = "The {0} field can not have more than {1} characters.")]
@@ -29,6 +27,11 @@ namespace MyVet.Web.Data.Entities
         [Display(Name = "Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime DataLocal => Date.ToLocalTime();
+
+
+        //Relations
+        public ServiceType ServiceType { get; set; }
+        public Pet Pet { get; set; }
 
     }
 }

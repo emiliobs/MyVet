@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyVet.Web.Data.Entities
 {
@@ -40,5 +42,9 @@ namespace MyVet.Web.Data.Entities
 
         [Display(Name = "Full Name With Document")]
         public string FullNameWithDocument => $"{FirstName} - {LastName} - {Document}";
+
+        //Relations
+        public ICollection<Pet> Pets { get; set; }
+        public ICollection<Agenda> Agendas { get; set; }
     }
 }
