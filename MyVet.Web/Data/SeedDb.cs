@@ -30,7 +30,7 @@ namespace MyVet.Web.Data
         {
             var owner = _context.Owners.FirstOrDefault();
             var petType = _context.PetTypes.FirstOrDefault();
-            if (_context.Pets.Any())
+            if (!_context.Pets.Any())
             {
                 AddPet("Otto", owner, petType, "Shih tzu");
                 AddPet("Killer", owner, petType, "Dobermann");
@@ -40,7 +40,7 @@ namespace MyVet.Web.Data
 
         private async Task CheckServiceTypesAsync()
         {
-            if (_context.ServiceTypes.Any())
+            if (!_context.ServiceTypes.Any())
             {
                 _context.ServiceTypes.Add(new ServiceType { Name = "Consulta" });
                 _context.ServiceTypes.Add(new ServiceType { Name = "Urgencia" });
@@ -51,7 +51,7 @@ namespace MyVet.Web.Data
 
         private async Task CheckPetTypesAsync()
         {
-            if (_context.PetTypes.Any())
+            if (!_context.PetTypes.Any())
             {
                 _context.PetTypes.Add(new PetType { Name = "Perro" });
                 _context.PetTypes.Add(new PetType { Name = "Geto" });
@@ -61,7 +61,7 @@ namespace MyVet.Web.Data
 
         private async Task CheckOwnersAsync()
         {
-            if (_context.Owners.Any())
+            if (!_context.Owners.Any())
             {
                 AddOwner("8989898", "Juan", "Zuluaga", "234 3232", "310 322 3221", "Calle Luna Calle Sol");
                 AddOwner("7655544", "Jose", "Cardona", "343 3226", "300 322 3221", "Calle 77 #22 21");
