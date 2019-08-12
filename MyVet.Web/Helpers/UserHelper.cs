@@ -12,13 +12,13 @@ namespace MyVet.Web.Helpers
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        #region Contructor
-        public UserHelper(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public UserHelper(
+            UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-        } 
-        #endregion
+        }
 
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
@@ -30,25 +30,22 @@ namespace MyVet.Web.Helpers
             await _userManager.AddToRoleAsync(user, roleName);
         }
 
-        public async Task CheckRolesAsync(string roleName)
+        public async Task CheckRoleAsync(string roleName)
         {
-            var roleExist = await _roleManager.RoleExistsAsync(roleName);
-
-            if (!roleExist)
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
+            if (!roleExists)
             {
                 await _roleManager.CreateAsync(new IdentityRole
                 {
-                  Name = roleName,
+                    Name = roleName
                 });
             }
         }
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
-            //var user = await _userManager.FindByEmailAsync(email);
-            return await _userManager.FindByEmailAsync(email);
-
-            //return user;
+            var user = await _userManager.FindByEmailAsync(email);
+            return user;
         }
 
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)
@@ -56,4 +53,5 @@ namespace MyVet.Web.Helpers
             return await _userManager.IsInRoleAsync(user, roleName);
         }
     }
+
 }

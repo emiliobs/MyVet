@@ -35,4 +35,4 @@ namespace MyVet.Web.Data.Entities
     }
 
 }
-}
+
