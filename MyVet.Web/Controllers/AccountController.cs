@@ -46,5 +46,13 @@ namespace MyVet.Web.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public async Task<IActionResult>  Logout()
+        {
+            await _userHelper.LogoutAsync();
+
+            return RedirectToAction("Index","Home");
+        }
     }
 }
