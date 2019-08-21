@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyVet.Web.Data;
 using MyVet.Web.Data.Entities;
@@ -17,11 +18,13 @@ namespace MyVet.Web.Controllers
     {
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
+        private readonly ICombosHelpers _combosHelpers;
 
-        public OwnersController(DataContext context, IUserHelper userHelper)
+        public OwnersController(DataContext context, IUserHelper userHelper, ICombosHelpers combosHelpers)
         {
             _context = context;
             _userHelper = userHelper;
+            _combosHelpers = combosHelpers;
         }
 
         // GET: Owners
@@ -197,13 +200,39 @@ namespace MyVet.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> AddPet(int? id)
+        {
+            if (id.Equals(null))
+            {
+                return NotFound();
+            }
+
+            var owner = await _context.Owners.FindAsync(id.Value);
+
+            if (owner.Equals(null))
+            {
+                return NotFound();
+            }
+
+            var model = new PetViewModel() 
+            {
+               Born = DateTime.Today.ToUniversalTime(),
+               OwenerId = owner.Id,
+               PetTypes = _combosHelpers.GetComboPetTypes(),
+            };
+
+            return View(owner);
+        }
+
+        
+
         private bool OwnerExists(int id)
         {
             return _context.Owners.Any(e => e.Id == id);
         }
     }
+                     
 
-    internal class AddUserViewModelAttribute : Attribute
-    {
-    }
+
+   
 }
