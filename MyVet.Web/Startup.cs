@@ -55,6 +55,8 @@ namespace MyVet.Web
             services.AddTransient<SeedDb>();
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddScoped<ICombosHelpers, CombosHelpers>();
+            services.AddScoped<IConverterHelper, ConverterHelper>();
+           
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

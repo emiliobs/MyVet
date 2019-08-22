@@ -11,7 +11,7 @@ namespace MyVet.Web.Models
 {
     public class PetViewModel : Pet
     {
-        public int OwenerId { get; set; }
+        public int OwnerId { get; set; }
 
         [Required(ErrorMessage = "The field {0} is mandatory.")]
         [Display(Name = "Pet Type")]

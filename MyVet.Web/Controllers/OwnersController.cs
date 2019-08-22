@@ -8,6 +8,7 @@ using MyVet.Web.Helpers;
 using MyVet.Web.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,12 +20,15 @@ namespace MyVet.Web.Controllers
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
         private readonly ICombosHelpers _combosHelpers;
+        private readonly IConverterHelper _converterHelper;
 
-        public OwnersController(DataContext context, IUserHelper userHelper, ICombosHelpers combosHelpers)
+        public OwnersController(DataContext context, IUserHelper userHelper, ICombosHelpers combosHelpers, 
+            IConverterHelper converterHelper)
         {
             _context = context;
             _userHelper = userHelper;
             _combosHelpers = combosHelpers;
+            _converterHelper = converterHelper;
         }
 
         // GET: Owners
@@ -200,6 +204,7 @@ namespace MyVet.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> AddPet(int? id)
         {
             if (id.Equals(null))
@@ -216,15 +221,60 @@ namespace MyVet.Web.Controllers
 
             var model = new PetViewModel() 
             {
-               Born = DateTime.Today.ToUniversalTime(),
-               OwenerId = owner.Id,
+               Born = DateTime.Now.ToUniversalTime(),
+               OwnerId = owner.Id,
                PetTypes = _combosHelpers.GetComboPetTypes(),
             };
 
-            return View(owner);
+            return View(model);
         }
 
-        
+       [HttpPost]
+        public async Task<IActionResult> AddPet(PetViewModel petViewModel)
+        {
+
+            if (ModelState.IsValid)
+            {
+                var path = string.Empty;
+
+                if (petViewModel.ImageFile != null)
+                {
+                    var guid = Guid.NewGuid().ToString();
+                    var file = $"{guid}.jpg";
+                    path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\Pets", file);
+
+                    //hew upload the image to server archive:
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await petViewModel.ImageFile.CopyToAsync(stream);
+                    }
+
+                    path = $"~/images/Pets/{file}";
+                }
+
+                var pet = await _converterHelper.ToPetAsync(petViewModel, path);              
+                _context.Pets.Add(pet);                     
+
+                try
+                {
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+
+                    ModelState.AddModelError(string.Empty, ex.Message.ToString());
+                    return View(petViewModel);
+                }
+
+                return this.RedirectToAction("Details", "Owners", new { id = petViewModel.OwnerId });
+            }
+
+            return View(petViewModel);
+        }
+
+       
+       
 
         private bool OwnerExists(int id)
         {
