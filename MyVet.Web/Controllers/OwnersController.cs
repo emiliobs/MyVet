@@ -266,6 +266,9 @@ namespace MyVet.Web.Controllers
                 return this.RedirectToAction("Details", "Owners", new { id = petViewModel.OwnerId });
             }
 
+            petViewModel.PetTypes = _combosHelpers.GetComboPetTypes();
+
+
             return View(petViewModel);
         }
 
@@ -322,12 +325,13 @@ namespace MyVet.Web.Controllers
                     return View(petViewModel);
                 }
 
-               
+                petViewModel.PetTypes = _combosHelpers.GetComboPetTypes();
+
+
                 return this.RedirectToAction("Details", "Owners", new { id = petViewModel.OwnerId });
             }
 
 
-            //petViewModel.PetType = _combosHelpers.GetComboPetTypes();
 
             return View(petViewModel);
         }
