@@ -16,7 +16,7 @@ namespace MyVet.Web.Helpers
             _context = context;
         }
 
-        IEnumerable<SelectListItem> ICombosHelpers.GetComboPetTypes()
+        public IEnumerable<SelectListItem> GetComboPetTypes()
         {
             //please not make this way.!!! not recursive:
             //var list = new List<SelectListItem>();

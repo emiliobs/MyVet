@@ -6,6 +6,7 @@ namespace MyVet.Web.Helpers
 {
     public interface IConverterHelper
     {
+        PetViewModel ToPetViewModel(Pet pet);
         Task<Pet> ToPetAsync(PetViewModel petViewModel, string path);
     }
 }

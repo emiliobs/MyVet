@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,14 +22,16 @@ namespace MyVet.Web.Controllers
         private readonly IUserHelper _userHelper;
         private readonly ICombosHelpers _combosHelpers;
         private readonly IConverterHelper _converterHelper;
+        private readonly IImageHelper _imageHelper;
 
         public OwnersController(DataContext context, IUserHelper userHelper, ICombosHelpers combosHelpers, 
-            IConverterHelper converterHelper)
+            IConverterHelper converterHelper, IImageHelper imageHelper)
         {
             _context = context;
             _userHelper = userHelper;
             _combosHelpers = combosHelpers;
             _converterHelper = converterHelper;
+            _imageHelper = imageHelper;
         }
 
         // GET: Owners
@@ -239,17 +242,10 @@ namespace MyVet.Web.Controllers
 
                 if (petViewModel.ImageFile != null)
                 {
-                    var guid = Guid.NewGuid().ToString();
-                    var file = $"{guid}.jpg";
-                    path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\Pets", file);
 
-                    //hew upload the image to server archive:
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await petViewModel.ImageFile.CopyToAsync(stream);
-                    }
-
-                    path = $"~/images/Pets/{file}";
+                    //het get the path form image:
+                    path = await _imageHelper.UploadImageAsync(petViewModel.ImageFile); 
+                   
                 }
 
                 var pet = await _converterHelper.ToPetAsync(petViewModel, path);              
@@ -273,8 +269,71 @@ namespace MyVet.Web.Controllers
             return View(petViewModel);
         }
 
-       
-       
+        [HttpGet]
+        public async Task<IActionResult> EditPet(int? id)
+        {
+            if (id.Equals(null))
+            {
+                return NotFound();
+            }
+
+            var pet = await _context.Pets.Include(p => p.Owner).Include(p => p.PetType).FirstOrDefaultAsync(p => p.Id .Equals(id));
+
+            if (pet.Equals(null))
+            {
+                return NotFound();
+            }
+      
+            return View(_converterHelper.ToPetViewModel(pet));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPet(int id,PetViewModel petViewModel)
+        {
+            if (id !=  petViewModel.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var path = petViewModel.ImageUrl;
+
+                if (petViewModel.ImageFile != null)
+                {
+
+                    //het get the path form image:
+                    path = await _imageHelper.UploadImageAsync(petViewModel.ImageFile);
+
+                }
+
+                var pet = await _converterHelper.ToPetAsync(petViewModel, path);
+
+                try
+                {
+                   _context.Pets.Update(pet);
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+
+                    ModelState.AddModelError(string.Empty, ex.Message.ToString());
+                    return View(petViewModel);
+                }
+
+               
+                return this.RedirectToAction("Details", "Owners", new { id = petViewModel.OwnerId });
+            }
+
+
+            //petViewModel.PetType = _combosHelpers.GetComboPetTypes();
+
+            return View(petViewModel);
+        }
+
+
+
 
         private bool OwnerExists(int id)
         {

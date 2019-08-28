@@ -8,15 +8,17 @@ namespace MyVet.Web.Helpers
     public class ConverterHelper : IConverterHelper
     {
         private readonly DataContext _context;
+        private readonly ICombosHelpers _combosHelpers;
 
-        public ConverterHelper(DataContext context)
+        public ConverterHelper(DataContext context, ICombosHelpers combosHelpers)
         {
             _context = context;
+            _combosHelpers = combosHelpers;
         }
 
         public async Task<Pet> ToPetAsync(PetViewModel petViewModel, string path)
         {
-            return new Pet()
+            var pet = new  Pet()
             {
                 Agendas = petViewModel.Agendas,
                 Born = petViewModel.Born,
@@ -27,10 +29,36 @@ namespace MyVet.Web.Helpers
                 Owner = await _context.Owners.FindAsync(petViewModel.OwnerId),
                 PetType = await _context.PetTypes.FindAsync(petViewModel.PetTypeId),
                 Race = petViewModel.Race,
-                Remarks = petViewModel.Remarks,
+                Remarks = petViewModel.Remarks,      
+            };
 
+            if (petViewModel.Id != 0)
+            {
+                pet.Id = petViewModel.Id;
+            }
 
-
+            return pet;
+        }
+                                                                          
+        public PetViewModel ToPetViewModel(Pet pet)
+        {
+            return new PetViewModel
+            {
+                Agendas = pet.Agendas,
+                Born = pet.Born,
+                Histories = pet.Histories,
+               
+                ImageUrl = pet.ImageUrl,
+                
+                Name = pet.Name,
+                Owner = pet.Owner,
+                PetType = pet.PetType,
+                Race = pet.Race,
+                Remarks = pet.Remarks,
+                Id = pet.Id,
+                OwnerId = pet.Owner.Id,
+                PetTypeId = pet.PetType.Id,
+                PetTypes =  _combosHelpers.GetComboPetTypes(),
             };
         }
     }

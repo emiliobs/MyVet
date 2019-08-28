@@ -87,6 +87,7 @@ else
                     @Html.DisplayNameFor(model => model.Pets.FirstOrDefault().Remarks)
                 </th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -121,9 +122,14 @@ else
                     @Html.DisplayFor(modelItem => item.Remarks)
                 </td>
                 <td>
-                    <a asp-action="EditPet" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
-                    <a asp-action="DetailsPet" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
+                    <a asp-action="EditPet" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> 
+                </td>
+                <td>
+                    <a asp-action="DetailsPet" asp-route-id="@item.Id" class="btn btn-info">Details</a> 
+                </td>
+                <td>
                     <a asp-action="DeletePet" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+
                 </td>
             </tr>
             }
