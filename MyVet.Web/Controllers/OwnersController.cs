@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyVet.Web.Data;
 using MyVet.Web.Data.Entities;
@@ -9,7 +7,6 @@ using MyVet.Web.Helpers;
 using MyVet.Web.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,7 +21,7 @@ namespace MyVet.Web.Controllers
         private readonly IConverterHelper _converterHelper;
         private readonly IImageHelper _imageHelper;
 
-        public OwnersController(DataContext context, IUserHelper userHelper, ICombosHelpers combosHelpers, 
+        public OwnersController(DataContext context, IUserHelper userHelper, ICombosHelpers combosHelpers,
             IConverterHelper converterHelper, IImageHelper imageHelper)
         {
             _context = context;
@@ -222,17 +219,17 @@ namespace MyVet.Web.Controllers
                 return NotFound();
             }
 
-            var model = new PetViewModel() 
+            var model = new PetViewModel()
             {
-               Born = DateTime.Now.ToUniversalTime(),
-               OwnerId = owner.Id,
-               PetTypes = _combosHelpers.GetComboPetTypes(),
+                Born = DateTime.Now.ToUniversalTime(),
+                OwnerId = owner.Id,
+                PetTypes = _combosHelpers.GetComboPetTypes(),
             };
 
             return View(model);
         }
 
-       [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> AddPet(PetViewModel petViewModel)
         {
 
@@ -244,12 +241,12 @@ namespace MyVet.Web.Controllers
                 {
 
                     //het get the path form image:
-                    path = await _imageHelper.UploadImageAsync(petViewModel.ImageFile); 
-                   
+                    path = await _imageHelper.UploadImageAsync(petViewModel.ImageFile);
+
                 }
 
-                var pet = await _converterHelper.ToPetAsync(petViewModel, path, true);              
-                _context.Pets.Add(pet);                     
+                var pet = await _converterHelper.ToPetAsync(petViewModel, path, true);
+                _context.Pets.Add(pet);
 
                 try
                 {
@@ -280,20 +277,20 @@ namespace MyVet.Web.Controllers
                 return NotFound();
             }
 
-            var pet = await _context.Pets.Include(p => p.Owner).Include(p => p.PetType).FirstOrDefaultAsync(p => p.Id .Equals(id));
+            var pet = await _context.Pets.Include(p => p.Owner).Include(p => p.PetType).FirstOrDefaultAsync(p => p.Id.Equals(id));
 
             if (pet.Equals(null))
             {
                 return NotFound();
             }
-      
+
             return View(_converterHelper.ToPetViewModel(pet));
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditPet(int id,PetViewModel petViewModel)
+        public async Task<IActionResult> EditPet(int id, PetViewModel petViewModel)
         {
-            if (id !=  petViewModel.Id)
+            if (id != petViewModel.Id)
             {
                 return NotFound();
             }
@@ -314,7 +311,7 @@ namespace MyVet.Web.Controllers
 
                 try
                 {
-                   _context.Pets.Update(pet);
+                    _context.Pets.Update(pet);
 
                     await _context.SaveChangesAsync();
                 }
@@ -336,7 +333,27 @@ namespace MyVet.Web.Controllers
             return View(petViewModel);
         }
 
+        public async Task<IActionResult> DetailsPet(int id)
+        {
+            if (id.Equals(null))
+            {
+                return NotFound();
+            }
 
+            var pet = await _context.Pets
+                .Include(p => p.Owner)
+                .ThenInclude(o => o.User)
+                .Include(p => p.Histories)
+                .ThenInclude(h => h.ServiceType)
+                .FirstOrDefaultAsync(o => o.Id.Equals(id));
+
+            if (pet.Equals(null))
+            {
+                return NotFound();
+            }
+
+            return View(pet);
+        }
 
 
         private bool OwnerExists(int id)
@@ -344,8 +361,8 @@ namespace MyVet.Web.Controllers
             return _context.Owners.Any(e => e.Id == id);
         }
     }
-                     
 
 
-   
+
+
 }
