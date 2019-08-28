@@ -16,14 +16,14 @@ namespace MyVet.Web.Helpers
             _combosHelpers = combosHelpers;
         }
 
-        public async Task<Pet> ToPetAsync(PetViewModel petViewModel, string path)
+        public async Task<Pet> ToPetAsync(PetViewModel petViewModel, string path, bool isNew)
         {
             var pet = new  Pet()
             {
                 Agendas = petViewModel.Agendas,
                 Born = petViewModel.Born,
                 Histories = petViewModel.Histories,
-                //Id = petViewModel.Id,
+                Id = isNew  ? 0 :  petViewModel.Id,
                 ImageUrl = path,
                 Name = petViewModel.Name,
                 Owner = await _context.Owners.FindAsync(petViewModel.OwnerId),
@@ -32,10 +32,7 @@ namespace MyVet.Web.Helpers
                 Remarks = petViewModel.Remarks,      
             };
 
-            if (petViewModel.Id != 0)
-            {
-                pet.Id = petViewModel.Id;
-            }
+            
 
             return pet;
         }

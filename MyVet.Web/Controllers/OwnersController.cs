@@ -248,7 +248,7 @@ namespace MyVet.Web.Controllers
                    
                 }
 
-                var pet = await _converterHelper.ToPetAsync(petViewModel, path);              
+                var pet = await _converterHelper.ToPetAsync(petViewModel, path, true);              
                 _context.Pets.Add(pet);                     
 
                 try
@@ -307,7 +307,7 @@ namespace MyVet.Web.Controllers
 
                 }
 
-                var pet = await _converterHelper.ToPetAsync(petViewModel, path);
+                var pet = await _converterHelper.ToPetAsync(petViewModel, path, false);
 
                 try
                 {
