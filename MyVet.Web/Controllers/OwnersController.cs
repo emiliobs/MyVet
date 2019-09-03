@@ -407,6 +407,53 @@ namespace MyVet.Web.Controllers
             return View(historyViewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditHistory(int? id)
+        {
+            if (id.Equals(null))
+            {
+                return BadRequest();
+            }
+
+            var history = await _context.Histories
+                .Include(h => h.Pet)
+                .Include(h => h.ServiceType)
+                .FirstOrDefaultAsync(p => p.Id.Equals(id.Value));
+
+            if (history.Equals(null))
+            {
+                return NotFound();
+            }
+
+            return View(_converterHelper.ToHistoryViewModel(history));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditHistory(HistoryViewModel historyViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var history = await _converterHelper.ToHistoryAsync(historyViewModel, false);
+
+                try
+                {
+                    _context.Histories.Update(history);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction("DetailsPet","Owners", new { id = historyViewModel.PetId });
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+
+            historyViewModel.ServiceTypes = _combosHelpers.GetComboServiceTypes();
+
+            return View(historyViewModel);
+        }
+
         private bool OwnerExists(int id)
         {
             return _context.Owners.Any(e => e.Id == id);
