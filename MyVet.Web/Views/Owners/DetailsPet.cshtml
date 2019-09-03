@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Details";
+    
 }
 
 <h2>Pet</h2>
@@ -53,9 +54,19 @@
     </div>
 </div>
 <div>
+    
+    <td>
+
     <a asp-action="EditPet" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-    <a asp-action="AddHistory" asp-route-id="@Model.Id" class="btn btn-primary">Add History</a>
-    <a asp-action="Details" asp-route-id="@Model.Owner.Id" class="btn btn-success">Back to Owner</a>
+    </td>
+    <td>
+        <a asp-action="AddHistory" asp-route-id="@Model.Id" class="btn btn-primary">Add History</a>
+    </td>
+    <td>
+        <a asp-action="Details" asp-route-id="@Model.Owner.Id" class="btn btn-success">Back to Owner</a>
+
+    </td>
+    
 </div>
 <h4>History</h4>
 
@@ -67,6 +78,7 @@ else
 {
     <table class="table">
         <thead>
+           
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Histories.FirstOrDefault().Date)
@@ -102,14 +114,37 @@ else
                     </td>
                     <td>
                         <a asp-action="EditHistory" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                        <a asp-action="DeleteHistory" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                        @* <a asp-action="DeleteHistory" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>*@
                     </td>
                     <td>
-
+                        <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog">Delete</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+
+<partial name="_DeleteDialog"/>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+    	$(document).ready(function () {
+        	// Delete item
+        	var item_to_delete;
+
+        	$('.deleteItem').click((e) => {
+            	item_to_delete = e.currentTarget.dataset.id;
+        	});
+
+        	$("#btnYesDelete").click(function () {
+            	window.location.href = '/Owners/DeletePet/' + item_to_delete;
+        	});
+    	});
+    </script>
+}
+
 

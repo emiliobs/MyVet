@@ -369,11 +369,11 @@ namespace MyVet.Web.Controllers
                 return NotFound();
             }
 
-            var historyViewModel = new HistoryViewModel 
+            var historyViewModel = new HistoryViewModel
             {
-               Date = DateTime.Now.ToUniversalTime(),
-               PetId = pet.Id,
-               ServiceTypes = _combosHelpers.GetComboServiceTypes(),
+                Date = DateTime.Now.ToUniversalTime(),
+                PetId = pet.Id,
+                ServiceTypes = _combosHelpers.GetComboServiceTypes(),
             };
 
             return View(historyViewModel);
@@ -391,7 +391,7 @@ namespace MyVet.Web.Controllers
                     _context.Histories.Add(history);
                     await _context.SaveChangesAsync();
 
-                    return RedirectToAction("DetailsPet","Owners", new { id = historyViewModel.PetId });
+                    return RedirectToAction("DetailsPet", "Owners", new { id = historyViewModel.PetId });
                     //return RedirectToAction($"{nameof(DetailsPet)}/{historyViewModel.PetId}");
                 }
                 catch (Exception ex)
@@ -440,7 +440,7 @@ namespace MyVet.Web.Controllers
                     _context.Histories.Update(history);
                     await _context.SaveChangesAsync();
 
-                    return RedirectToAction("DetailsPet","Owners", new { id = historyViewModel.PetId });
+                    return RedirectToAction("DetailsPet", "Owners", new { id = historyViewModel.PetId });
                 }
                 catch (Exception ex)
                 {
@@ -452,6 +452,88 @@ namespace MyVet.Web.Controllers
             historyViewModel.ServiceTypes = _combosHelpers.GetComboServiceTypes();
 
             return View(historyViewModel);
+        }
+
+        public async Task<IActionResult> DeleteHistory(int? Id)
+        {
+            if (Id.Equals(null))
+            {
+                return NotFound();
+            }
+
+            var history = await _context.Histories.Include(h => h.Pet).FirstOrDefaultAsync(h => h.Id.Equals(Id.Value));
+
+            if (history.Equals(null))
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                _context.Histories.Remove(history);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("DetailsPet", "Owners", new { id = history.Pet.Id });
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+
+
+
+        }
+
+        public async Task<IActionResult> DeletePet(int? Id)
+        {
+
+        
+
+                if (Id.Equals(null))
+                {
+                    return NotFound();
+                }
+
+                var pet = await _context.Pets
+                    .Include(p => p.Owner)
+                    .Include(p => p.Histories)
+                    .FirstOrDefaultAsync(h => h.Id.Equals(Id.Value));
+
+                if (pet.Equals(null))
+                {
+                    return NotFound();
+                }
+
+                //aqui no permito borrar la mascota por que tiene historial:
+                if (pet.Histories.Count > 0)
+                {
+
+                    //ViewBag.ErrorDelete = "The pet can't be delete because it has related records.";
+
+                    ModelState.AddModelError(string.Empty, "The pet can't be delete because it has related records.");
+
+
+                    return RedirectToAction("Details", "Owners", new { id = pet.Owner.Id });
+
+                }
+
+                try
+                {
+                    _context.Pets.Remove(pet);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", "Owners", new { id = pet.Owner.Id });
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+
+            
+
+
         }
 
         private bool OwnerExists(int id)
