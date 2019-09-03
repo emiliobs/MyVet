@@ -9,5 +9,9 @@ namespace MyVet.Web.Helpers
         PetViewModel ToPetViewModel(Pet pet);
        
         Task<Pet> ToPetAsync(PetViewModel petViewModel, string path, bool isNew);
+
+        Task<History> ToHistoryAsync(HistoryViewModel historyViewModel, bool isNew);
+
+        HistoryViewModel ToHistoryViewModel(History history);
     }
 }

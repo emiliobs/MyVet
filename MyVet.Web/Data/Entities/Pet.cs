@@ -35,7 +35,7 @@ namespace MyVet.Web.Data.Entities
             : $"https://TDB.azurewebsites.net{ImageUrl.Substring(1)}";
 
         [Display(Name = "Born")]
-        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
+       // [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime BornLocal => DateTime.Now.ToUniversalTime();
 
         //relations

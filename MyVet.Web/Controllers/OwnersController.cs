@@ -355,6 +355,57 @@ namespace MyVet.Web.Controllers
             return View(pet);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AddHistory(int? id)
+        {
+            if (id.Equals(null))
+            {
+                return NotFound();
+            }
+
+            var pet = await _context.Pets.FindAsync(id.Value);
+            if (pet.Equals(null))
+            {
+                return NotFound();
+            }
+
+            var historyViewModel = new HistoryViewModel 
+            {
+               Date = DateTime.Now.ToUniversalTime(),
+               PetId = pet.Id,
+               ServiceTypes = _combosHelpers.GetComboServiceTypes(),
+            };
+
+            return View(historyViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddHistory(HistoryViewModel historyViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var history = await _converterHelper.ToHistoryAsync(historyViewModel, true);
+
+                try
+                {
+                    _context.Histories.Add(history);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction("DetailsPet","Owners", new { id = historyViewModel.PetId });
+                    //return RedirectToAction($"{nameof(DetailsPet)}/{historyViewModel.PetId}");
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+
+            //here put combobox couse can loss:
+            historyViewModel.ServiceTypes = _combosHelpers.GetComboServiceTypes();
+
+            return View(historyViewModel);
+        }
 
         private bool OwnerExists(int id)
         {
