@@ -184,25 +184,50 @@ namespace MyVet.Web.Controllers
             }
 
             var owner = await _context.Owners
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(o => o.User)
+                .Include(o => o.Pets)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
             if (owner == null)
             {
                 return NotFound();
             }
 
-            return View(owner);
+            if (owner.Pets.Count > 0)
+            {
+                ModelState.AddModelError(string.Empty, "The owners cannot be removed.");
+                return RedirectToAction(nameof(Index));
+
+            }
+
+            //elete the user:
+             await  _userHelper.DeleteUserAsyn(owner.User.Email);
+
+            try
+            {
+                _context.Owners.Remove(owner);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+
+              return  BadRequest(ex.Message);
+            }
+
+           
         }
 
         // POST: Owners/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var owner = await _context.Owners.FindAsync(id);
-            _context.Owners.Remove(owner);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var owner = await _context.Owners.FindAsync(id);
+        //    _context.Owners.Remove(owner);
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         [HttpGet]
         public async Task<IActionResult> AddPet(int? id)
