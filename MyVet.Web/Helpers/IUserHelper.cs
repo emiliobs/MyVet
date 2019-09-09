@@ -25,6 +25,8 @@ namespace MyVet.Web.Helpers
         Task LogoutAsync();
 
         Task<bool> DeleteUserAsyn(string email);
+
+        Task<IdentityResult> UpdateUserAsync(User user);
     }
 
 }

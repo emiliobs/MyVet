@@ -132,12 +132,26 @@ namespace MyVet.Web.Controllers
                 return NotFound();
             }
 
-            var owner = await _context.Owners.FindAsync(id);
-            if (owner == null)
+            var owner = await _context.Owners
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.Id.Equals(id.Value));
+
+            if (owner.Equals(null))
             {
                 return NotFound();
             }
-            return View(owner);
+
+            var model = new EditUserViewModel
+            {
+                Address = owner.User.Address,
+                Document = owner.User.Document,
+                FirstName = owner.User.FirstName,
+                Id = owner.Id,
+                LastName = owner.User.LastName,
+                PhoneNumber = owner.User.PhoneNumber,
+            };
+
+            return View(model);
         }
 
         // POST: Owners/Edit/5
@@ -145,34 +159,37 @@ namespace MyVet.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id")] Owner owner)
+        public async Task<IActionResult> Edit(EditUserViewModel editUserViewModel)
         {
-            if (id != owner.Id)
-            {
-                return NotFound();
-            }
+
 
             if (ModelState.IsValid)
             {
+
+                var owner = await _context.Owners
+                    .Include(o => o.User)
+                    .FirstOrDefaultAsync(o => o.Id.Equals(editUserViewModel.Id));
+
+                owner.User.Document = editUserViewModel.Document;
+                owner.User.FirstName = editUserViewModel.FirstName;
+                owner.User.LastName = editUserViewModel.LastName;
+                owner.User.Address = editUserViewModel.Address;
+                owner.User.PhoneNumber = editUserViewModel.PhoneNumber;
+
                 try
                 {
-                    _context.Update(owner);
-                    await _context.SaveChangesAsync();
+                    await _userHelper.UpdateUserAsync(owner.User);
+
+                    return RedirectToAction(nameof(Index));
+
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!OwnerExists(owner.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return BadRequest(ex.Message);
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(owner);
+
+            return View(editUserViewModel);
         }
 
         // GET: Owners/Delete/5
@@ -201,7 +218,7 @@ namespace MyVet.Web.Controllers
             }
 
             //elete the user:
-             await  _userHelper.DeleteUserAsyn(owner.User.Email);
+            await _userHelper.DeleteUserAsyn(owner.User.Email);
 
             try
             {
@@ -212,10 +229,10 @@ namespace MyVet.Web.Controllers
             catch (Exception ex)
             {
 
-              return  BadRequest(ex.Message);
+                return BadRequest(ex.Message);
             }
 
-           
+
         }
 
         // POST: Owners/Delete/5
@@ -513,50 +530,50 @@ namespace MyVet.Web.Controllers
         public async Task<IActionResult> DeletePet(int? Id)
         {
 
-        
-
-                if (Id.Equals(null))
-                {
-                    return NotFound();
-                }
-
-                var pet = await _context.Pets
-                    .Include(p => p.Owner)
-                    .Include(p => p.Histories)
-                    .FirstOrDefaultAsync(h => h.Id.Equals(Id.Value));
-
-                if (pet.Equals(null))
-                {
-                    return NotFound();
-                }
-
-                //aqui no permito borrar la mascota por que tiene historial:
-                if (pet.Histories.Count > 0)
-                {
-
-                    //ViewBag.ErrorDelete = "The pet can't be delete because it has related records.";
-
-                    ModelState.AddModelError(string.Empty, "The pet can't be delete because it has related records.");
 
 
-                    return RedirectToAction("Details", "Owners", new { id = pet.Owner.Id });
+            if (Id.Equals(null))
+            {
+                return NotFound();
+            }
 
-                }
+            var pet = await _context.Pets
+                .Include(p => p.Owner)
+                .Include(p => p.Histories)
+                .FirstOrDefaultAsync(h => h.Id.Equals(Id.Value));
 
-                try
-                {
-                    _context.Pets.Remove(pet);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction("Details", "Owners", new { id = pet.Owner.Id });
+            if (pet.Equals(null))
+            {
+                return NotFound();
+            }
 
-                }
-                catch (Exception ex)
-                {
+            //aqui no permito borrar la mascota por que tiene historial:
+            if (pet.Histories.Count > 0)
+            {
 
-                    return BadRequest(ex.Message);
-                }
+                //ViewBag.ErrorDelete = "The pet can't be delete because it has related records.";
 
-            
+                ModelState.AddModelError(string.Empty, "The pet can't be delete because it has related records.");
+
+
+                return RedirectToAction("Details", "Owners", new { id = pet.Owner.Id });
+
+            }
+
+            try
+            {
+                _context.Pets.Remove(pet);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", "Owners", new { id = pet.Owner.Id });
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+
+
 
 
         }
