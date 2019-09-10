@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MyVet.Common.Models;
 using MyVet.Web.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyVet.Web.Controllers.API
@@ -29,15 +30,44 @@ namespace MyVet.Web.Controllers.API
             var owner = await _dataContext.Owners
                 .Include(o => o.User)
                 .Include(o => o.Pets)
-                .Include(o => o.Agendas)
-                .FirstOrDefaultAsync(o => o.User.Email.Equals(emailRequest.Email));
+                .ThenInclude(p => p.PetType)
+                .Include(o => o.Pets)
+                .ThenInclude(p => p.Histories)
+                .ThenInclude(h => h.ServiceType)
+                .FirstOrDefaultAsync(o => o.User.Email.ToLower() == emailRequest.Email.ToLower());
 
-            if (owner.Equals(null))
+            var response = new OwnerResponse 
             {
-                return NotFound();
-            }
+                 Id = owner.Id,
+                 FirstName = owner.User.FirstName,
+                 LastName = owner.User.LastName,
+                 Address = owner.User.Address,
+                 Document = owner.User.Document,
+                 Email = owner.User.Email,
+                 PhoneNumber = owner.User.PhoneNumber,
+                 Pets = owner.Pets.Select(p => new PetResponse 
+                 {
+                    Born = p.Born,
+                    Id = p.Id,
+                    ImageUrl = p.ImageFullPath,
+                    Name = p.Name,
+                    Race = p.Race,
+                    Remarks = p.Remarks,
+                    PetType = p.PetType.Name,
+                    Histories = p.Histories.Select(h => new HistoryResponse 
+                    {
+                        Date = h.Date,
+                        Description = h.Description,
+                        Id = h.Id,
+                        Remarks = h.Remarks,
+                        ServiceType = h.ServiceType.Name,
+                    }).ToList(),
+                 }).ToList(),
+            };
 
-            return Ok(owner);
+            
+
+            return Ok(response);
         }
     }
 }
