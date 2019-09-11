@@ -1,4 +1,6 @@
-﻿using Prism.Commands;
+﻿using MyVet.Common.Models;
+using MyVet.Common.Services;
+using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
 using System;
@@ -9,15 +11,16 @@ namespace MyVet.Prism.ViewModels
 {
     public class LoginPageViewModel : ViewModelBase
     {
+        private readonly IAPIService _apiService;
         private string _password;
         private bool _isRunning;
         private bool _isEnabled;
         private DelegateCommand _loginCommand;
 
-        public LoginPageViewModel(INavigationService navigationService): base(navigationService)
+        public LoginPageViewModel(INavigationService navigationService, IAPIService apiService ): base(navigationService)
         {
-            Title = "Login";
-
+            _apiService = apiService;
+            Title = "Login";  
             IsEnabled = true;
         }
 
@@ -68,6 +71,38 @@ namespace MyVet.Prism.ViewModels
                 await App.Current.MainPage.DisplayAlert("Error", "Ypu must enter a Password","Accept");
                 return;
             }
+
+            IsRunning = true;
+            IsEnabled = false;
+
+            var request = new TokenRequest
+            {
+                Username = Email,
+                Password = Password,
+            };
+
+            var urlBase       = App.Current.Resources["UrlApi"].ToString();
+            var controller    = App.Current.Resources["Controller"].ToString();
+            var servicePrefix = App.Current.Resources["ServicePrefix"].ToString();
+
+            var respose = await _apiService.GetTokenAsync(urlBase, controller, servicePrefix, request);
+
+            if (!respose.IsSuccess)
+            {
+                await App.Current.MainPage.DisplayAlert("Error","Email or Password Incorrect.","Accept");
+
+                Password = string.Empty;
+
+                IsRunning = false;
+                IsEnabled = true;
+
+                return;
+            }
+
+            IsRunning = false;
+            IsEnabled = true;
+
+
 
             await App.Current.MainPage.DisplayAlert("OK","Fuck Yeahhhh!!","Accept");
         }

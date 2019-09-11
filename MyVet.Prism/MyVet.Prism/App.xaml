@@ -6,6 +6,9 @@
 	<Application.Resources>
 
 		<!-- Application resource dictionary -->
-
+          <!--Parameters-->
+        <x:String x:Key="UrlApi">https://appmyvet.azurewebsites.net/</x:String>
+        <x:String x:Key="Controller">Account</x:String>
+        <x:String x:Key="ServicePrefix">/CreateToken</x:String>
 	</Application.Resources>
 </prism:PrismApplication>
