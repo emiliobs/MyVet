@@ -33,6 +33,7 @@ namespace MyVet.Prism
             containerRegistry.Register<IAPIService, ApiService>();
             containerRegistry.RegisterForNavigation<NavigationPage>();
             containerRegistry.RegisterForNavigation<LoginPage, LoginPageViewModel>();
+            containerRegistry.RegisterForNavigation<PetsPage, PetsPageViewModel>();
         }
     }
 }

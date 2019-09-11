@@ -12,7 +12,7 @@ namespace MyVet.Web.Controllers.API
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class OwnersController : Controller
+    public class OwnersController : ControllerBase
     {
         private readonly DataContext _dataContext;
 
@@ -37,19 +37,19 @@ namespace MyVet.Web.Controllers.API
                 .Include(o => o.Pets)
                 .ThenInclude(p => p.Histories)
                 .ThenInclude(h => h.ServiceType)
-                .FirstOrDefaultAsync(o => o.User.Email.ToLower() == emailRequest.Email.ToLower());
+                .FirstOrDefaultAsync(o => o.User.UserName.ToLower() == emailRequest.Email.ToLower());
 
-            var response = new OwnerResponse 
+            var response = new OwnerResponse
             {
-                 Id = owner.Id,
-                 FirstName = owner.User.FirstName,
-                 LastName = owner.User.LastName,
-                 Address = owner.User.Address,
-                 Document = owner.User.Document,
-                 Email = owner.User.Email,
-                 PhoneNumber = owner.User.PhoneNumber,
-                 Pets = owner.Pets.Select(p => new PetResponse 
-                 {
+                Id = owner.Id,
+                FirstName = owner.User.FirstName,
+                LastName = owner.User.LastName,
+                Address = owner.User.Address,
+                Document = owner.User.Document,
+                Email = owner.User.Email,
+                PhoneNumber = owner.User.PhoneNumber,
+                Pets = owner.Pets.Select(p => new PetResponse
+                {
                     Born = p.Born,
                     Id = p.Id,
                     ImageUrl = p.ImageFullPath,
@@ -57,18 +57,16 @@ namespace MyVet.Web.Controllers.API
                     Race = p.Race,
                     Remarks = p.Remarks,
                     PetType = p.PetType.Name,
-                    Histories = p.Histories.Select(h => new HistoryResponse 
+                    Histories = p.Histories.Select(h => new HistoryResponse
                     {
                         Date = h.Date,
                         Description = h.Description,
                         Id = h.Id,
                         Remarks = h.Remarks,
-                        ServiceType = h.ServiceType.Name,
-                    }).ToList(),
-                 }).ToList(),
+                        ServiceType = h.ServiceType.Name
+                    }).ToList()
+                }).ToList()
             };
-
-            
 
             return Ok(response);
         }

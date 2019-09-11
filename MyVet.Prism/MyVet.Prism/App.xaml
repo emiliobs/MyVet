@@ -10,5 +10,10 @@
         <x:String x:Key="UrlApi">https://appmyvet.azurewebsites.net/</x:String>
         <x:String x:Key="Controller">Account</x:String>
         <x:String x:Key="ServicePrefix">/CreateToken</x:String>
+        <x:String x:Key="API">api</x:String>
+        <x:String x:Key="Bearer">Bearer</x:String>
+        <x:String x:Key="ControllerOwnersGetOwnerByEmail">/Owners/GetOwnerByEmail</x:String>
+        <!--https://appmyvet.azurewebsites.net/api/Owners/GetOwnerByEmail-->
+        
 	</Application.Resources>
 </prism:PrismApplication>
