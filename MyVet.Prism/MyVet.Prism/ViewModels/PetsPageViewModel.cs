@@ -11,15 +11,17 @@ namespace MyVet.Prism.ViewModels
 {
     public class PetsPageViewModel : ViewModelBase
     {
+        private readonly INavigationService _navigationService;
         private OwnerResponse _owner;
-        private ObservableCollection<PetResponse> _pets;
+        private ObservableCollection<PetItemViewModel> _pets;
 
         public PetsPageViewModel(INavigationService navigationService): base(navigationService)
         {
             Title = "Pets";
+            _navigationService = navigationService;
         }
 
-        public ObservableCollection<PetResponse> Pets 
+        public ObservableCollection<PetItemViewModel> Pets 
         {
             get => _pets;
             set => SetProperty(ref _pets, value);
@@ -35,7 +37,17 @@ namespace MyVet.Prism.ViewModels
 
                 Title = $"Pets of: {_owner.FullName}";
 
-                Pets = new ObservableCollection<PetResponse>(_owner.Pets);
+                Pets = new ObservableCollection<PetItemViewModel>(_owner.Pets.Select(p => new PetItemViewModel(_navigationService) 
+                {
+                    Born = p.Born,
+                    Histories = p.Histories,
+                    Id = p.Id,
+                    ImageUrl = p.ImageUrl,
+                    Name = p.Name,
+                    PetType = p.PetType,
+                    Race = p.Race,
+                    Remarks = p.Remarks,
+                }));
             }
         }
     }

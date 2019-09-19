@@ -21,9 +21,13 @@
                            IsRunning="{Binding IsRunning}">            
         </ActivityIndicator>
         <Button
+            BorderRadius="23"
+            BackgroundColor="Navy"
+            HeightRequest="46"
             IsEnabled="{Binding IsEnabled}"
             Command="{Binding LoginCommand}"
-            Text="Login">            
+            Text="Login"
+            TextColor="White">            
         </Button>
     </StackLayout>
     
