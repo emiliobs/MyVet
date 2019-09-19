@@ -2,12 +2,26 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:prism="http://prismlibrary.com" 
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"              
              x:Class="MyVet.Prism.Views.PetPage"
              Title="{Binding Title}">
-
+    <ScrollView>
+        
     <StackLayout Padding="10">
-        <Image Source="{Binding Pet.ImageUrl}" WidthRequest="180"></Image>
-
+        <!--<Image Source="{Binding Pet.ImageUrl}" WidthRequest="180"></Image>-->
+        <ffimageloading:CachedImage
+                                    Grid.Column="0"
+                                    Source="{Binding Pet.ImageUrl}"
+                                    LoadingPlaceholder="LoaderImage"
+                                    ErrorPlaceholder="ErrorImage"
+                                    CacheDuration="50"
+                                    RetryCount="3"
+                                    RetryDelay="600"
+                                    DownsampleToViewSize="True"
+                                    WidthRequest="300"
+                                    HeightRequest="300"
+                                    Aspect="AspectFill">
+        </ffimageloading:CachedImage>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -23,35 +37,39 @@
 
             <Label Grid.Column="0" 
                     Grid.Row="0" 
-                    Text="Name">
+                    Text="Name"
+                   FontAttributes="Bold">
             </Label>
             <Label Grid.Column="1" 
                 Grid.Row="0" 
-                Text="{Binding Pet.Name}" 
-                FontAttributes="Bold">
+                Text="{Binding Pet.Name}">
+
             </Label>
-            <Label Text="Race" 
+                <Label Text="Race" 
                 Grid.Column="0" 
-                Grid.Row="1">
-            </Label>
+                Grid.Row="1"
+                   FontAttributes="Bold">
+                </Label>
             <Label Grid.Column="1" 
                 Grid.Row="1"
                
                 Text="{Binding Pet.Race}">  
             </Label>
-            <Label Text="Born" 
+                <Label Text="Born" 
                 Grid.Column="0" 
-                Grid.Row="2">
-            </Label>
+                Grid.Row="2"
+                   FontAttributes="Bold">
+                </Label>
             <Label Grid.Column="1" 
                 Grid.Row="2"
                
                 Text="{Binding Pet.Born,StringFormat='{0:dd/MM/yyyy}'}">
             </Label>
-            <Label Text="Pet Type" 
+                <Label Text="Pet Type" 
                 Grid.Column="0" 
-                Grid.Row="3">
-            </Label>
+                Grid.Row="3"
+                   FontAttributes="Bold">
+                </Label>
             <Label Grid.Column="1" 
                 Grid.Row="3"
                
@@ -59,10 +77,11 @@
                 
             </Label>
 
-            <Label Text="Remarks" 
+                <Label Text="Remarks" 
                 Grid.Column="0" 
-                Grid.Row="4">
-            </Label>
+                Grid.Row="4"
+                   FontAttributes="Bold">
+                </Label>
             <Label Grid.Column="1" 
                 Grid.Row="4"
                
@@ -72,4 +91,5 @@
         
     </StackLayout>
   
+    </ScrollView>
 </ContentPage>

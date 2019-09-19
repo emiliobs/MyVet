@@ -5,7 +5,8 @@
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="MyVet.Prism.Views.LoginPage"
              Title="{Binding Title}">
-
+    <ScrollView>
+        
     <StackLayout Padding="10" >
         <Label Text="Email"></Label>
         <Entry Keyboard="Email"
@@ -31,4 +32,5 @@
         </Button>
     </StackLayout>
     
+    </ScrollView>
 </ContentPage>

@@ -2,10 +2,13 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="MyVet.Prism.Views.PetsPage"
              BackgroundColor="Silver"
              Title="{Binding Title}">
+    <ScrollView>
+        
     <StackLayout Padding="10">
         <ListView ItemsSource="{Binding Pets}"
                   HasUnevenRows="True"
@@ -24,7 +27,18 @@
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Image Grid.Column="0" Source="{Binding ImageUrl}" WidthRequest="120"></Image>
+                            <!--<Image Grid.Column="0" Source="{Binding ImageUrl}" WidthRequest="120"></Image>-->
+                                <ffimageloading:CachedImage
+                                    Grid.Column="0"
+                                    Source="{Binding ImageUrl}"
+                                    LoadingPlaceholder="LoaderImage"
+                                    ErrorPlaceholder="ErrorImage"
+                                    CacheDuration="50"
+                                    RetryCount="3"
+                                    RetryDelay="600"
+                                    DownsampleToViewSize="True"
+                                    WidthRequest="100">                                    
+                                </ffimageloading:CachedImage>
                             <Grid Grid.Column="1">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
@@ -68,4 +82,5 @@
         </ListView>
     </StackLayout>
   
+    </ScrollView>
 </ContentPage>
