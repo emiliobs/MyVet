@@ -5,7 +5,7 @@ namespace MyVet.Common.Services
 {
     public interface IAPIService
     {
-        Task<Response> GetOwnerByEmail(
+        Task<Response<OwnerResponse>> GetOwnerByEmail(
                  string urlBase,
                  string servicePrefix,
                  string controller,
@@ -14,6 +14,8 @@ namespace MyVet.Common.Services
                  string email);
 
         //  Task<Response> GetOwnerByEmailAsyn(string urlBase,string servicePrefix,string controller, string email);
-        Task<Response> GetTokenAsync(string urlBase, string servicePrefix, string controller, TokenRequest tokenRequest);
+        Task<Response<TokenResponse>> GetTokenAsync(string urlBase, string servicePrefix, string controller, TokenRequest tokenRequest);
+
+        Task<bool> CheckConnection(string url);
     }
 }
