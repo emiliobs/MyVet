@@ -30,6 +30,10 @@
                     <ViewCell>             
                         
                             <Grid>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectHistoryCommand}"></TapGestureRecognizer>    
+                                </Grid.GestureRecognizers>
+                                
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
