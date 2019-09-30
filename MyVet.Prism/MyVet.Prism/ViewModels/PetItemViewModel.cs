@@ -1,5 +1,7 @@
 ﻿
+using MyVet.Common.Helpers;
 using MyVet.Common.Models;
+using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Navigation;
 using System;
@@ -25,13 +27,15 @@ namespace MyVet.Prism.ViewModels
             //var parameter = new NavigationParameters();
             //parameter.Add("pet",this);
 
-            var parameter = new NavigationParameters 
-            {
-                { "pet", this }
-            };
+            //var parameter = new NavigationParameters 
+            //{
+            //    { "pet", this }
+            //};
+            Setting.Pet = JsonConvert.SerializeObject(this); 
 
             //await _navigationService.NavigateAsync("PetPage", parameter);
-            await _navigationService.NavigateAsync("HistoriesPAge", parameter);
+            //await _navigationService.NavigateAsync("HistoriesPAge", parameter);
+            await _navigationService.NavigateAsync("PetTabbedPage");
 
         }
     }
