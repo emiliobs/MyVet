@@ -2,12 +2,14 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:busyindicator="clr-namespace:Syncfusion.SfBusyIndicator.XForms;assembly=Syncfusion.SfBusyIndicator.XForms"
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="MyVet.Prism.Views.LoginPage"
              Title="{Binding Title}">
     <ScrollView>
         
     <StackLayout Padding="10" >
+            <Image  HeightRequest="230" Source="logo"></Image>       
         <Label Text="Email"></Label>
         <Entry Keyboard="Email"
                Placeholder="Enter your Email....." 
@@ -18,9 +20,18 @@
                Placeholder="Enter your Password....." 
                Text="{Binding Password}">
         </Entry>
-        <ActivityIndicator VerticalOptions="CenterAndExpand" 
+            <busyindicator:SfBusyIndicator
+                AnimationType="Gear"
+                HorizontalOptions="Center"
+                IsVisible="{Binding IsRunning}"
+                Title="Loading....."
+                VerticalOptions="Center"
+                ViewBoxWidth="80"
+                ViewBoxHeight="80">                
+            </busyindicator:SfBusyIndicator>
+        <!--<ActivityIndicator VerticalOptions="CenterAndExpand" 
                            IsRunning="{Binding IsRunning}">            
-        </ActivityIndicator>
+        </ActivityIndicator>-->
         <Button
             BorderRadius="23"
             BackgroundColor="Navy"
@@ -28,7 +39,8 @@
             IsEnabled="{Binding IsEnabled}"
             Command="{Binding LoginCommand}"
             Text="Login"
-            TextColor="White">            
+            TextColor="White"
+            VerticalOptions="StartAndExpand">            
         </Button>
     </StackLayout>
     
