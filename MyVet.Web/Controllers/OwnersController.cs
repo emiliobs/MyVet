@@ -52,7 +52,7 @@ namespace MyVet.Web.Controllers
                                              .Include(o => o.Pets)
                                              .ThenInclude(p => p.Histories)
                                              .FirstOrDefaultAsync(m => m.Id.Equals(id));
-            if (owner.Equals(null))
+            if (owner == null)
             {
                 return NotFound();
             }
