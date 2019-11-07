@@ -237,10 +237,7 @@ namespace MyVet.Web.Controllers
 
 
                 await _userHelper.UpdateUserAsync(owner.User);
-                return RedirectToAction("Index","Home");
-
-
-               
+                return RedirectToAction("Index","Home");                        
 
             }
 
